@@ -1,4 +1,4 @@
-utomated Resume Relevance Check System (MVP)
+Automated Resume Relevance Check System (MVP)
 Project Overview
 
 The Automated Resume Relevance Check System is a Python-based tool designed to streamline and automate the process of evaluating resumes against job descriptions (JDs). This system was created to assist placement teams, recruiters, and students by providing a fast, consistent, and accurate evaluation of resumes while highlighting gaps and offering actionable feedback.
