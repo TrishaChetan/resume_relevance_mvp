@@ -23,17 +23,6 @@ Batch Processing: Allows evaluation of multiple resumes against a JD at once.
 
 Streamlit Dashboard: User-friendly interface for uploading JDs and resumes, reviewing results, and downloading CSV reports.
 
-Project Structure
-resume_relevance_mvp/
-│
-├── batch_process.py        # Core batch evaluation logic
-├── scorer.py               # Resume scoring and verdict calculations
-├── streamlit_app.py        # Streamlit interface for uploading and evaluating resumes
-├── Theme 2 - Sample Data/  # Sample JD and resume files for testing
-│   ├── JD/
-│   └── resumes/
-├── requirements.txt        # Python dependencies
-└── README.md               # Project documentation
 
 Technology Stack
 
