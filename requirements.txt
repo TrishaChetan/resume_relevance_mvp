@@ -1,0 +1,8 @@
+streamlit
+pandas
+docx2txt
+pdfplumber
+sentence-transformers
+faiss-cpu
+openai
+rapidfuzz
