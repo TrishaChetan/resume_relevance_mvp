@@ -15,6 +15,10 @@ Hybrid Scoring System: Combines hard keyword matching with semantic similarity u
 
 Missing Skills Detection: Identifies skills or experiences in the JD that are missing from the resume.
 
+Skill Vocabulary: ~80 canonical skills with aliases (e.g. sklearn → scikit-learn, k8s → kubernetes) in skills_db.py, matched on word boundaries so R doesn't match React and C doesn't match C++. Extend it with your own domain skills.
+
+Ranked Shortlist: Results are sorted by score with a Rank column, ready for shortlisting.
+
 AI/LLM-based Feedback: Provides tailored feedback to students, highlighting areas for improvement.
 
 Verdict Generation: Categorizes candidates as High, Medium, or Low suitability for a given role.

@@ -10,7 +10,8 @@ model = SentenceTransformer('all-MiniLM-L6-v2')
 # --------------------------
 def preprocess_text(text):
     text = text.lower()
-    text = re.sub(r'[^a-z0-9\s]', ' ', text)  # remove punctuation
+    # remove punctuation but keep + and # so c++ / c# stay distinct from c
+    text = re.sub(r'[^a-z0-9+#\s]', ' ', text)
     text = re.sub(r'\s+', ' ', text)  # collapse spaces
     return text
 
