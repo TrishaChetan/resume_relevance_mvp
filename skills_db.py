@@ -4,6 +4,8 @@ Each canonical skill maps to the aliases that may appear in text. Matching is
 case-insensitive and on word boundaries, so "R" won't match inside "React".
 Add your own domain skills here — no other code needs to change.
 """
+import re
+
 
 SKILL_ALIASES = {
     # Programming languages
@@ -93,3 +95,21 @@ SKILL_ALIASES = {
 
 # Flat list kept for backwards compatibility with older code
 SKILLS = list(SKILL_ALIASES)
+
+
+def _alias_pattern(alias):
+    # \b doesn't work next to symbols like "+" or "#", so use look-arounds
+    return re.compile(r"(?<![a-z0-9.])" + re.escape(alias.lower()) + r"(?![a-z0-9+#])")
+
+_SKILL_PATTERNS = {skill: [_alias_pattern(a) for a in aliases] for skill, aliases in SKILL_ALIASES.items()}
+
+
+def find_known_skills(text):
+    """Return canonical skills from the vocabulary that appear in text, in order of first appearance."""
+    text = text.lower()
+    hits = []
+    for skill, patterns in _SKILL_PATTERNS.items():
+        positions = [m.start() for p in patterns for m in [p.search(text)] if m]
+        if positions:
+            hits.append((min(positions), skill))
+    return [s for _, s in sorted(hits)]

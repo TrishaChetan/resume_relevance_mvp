@@ -4,7 +4,7 @@ import pdfplumber
 import docx2txt
 import pandas as pd
 from scorer import compute_final_score
-from skills_db import SKILL_ALIASES
+from skills_db import find_known_skills
 
 # --------------------------
 # Parse resume
@@ -29,24 +29,6 @@ def parse_jd(file_path):
 # --------------------------
 # Extract skills from JD
 # --------------------------
-def _alias_pattern(alias):
-    # \b doesn't work next to symbols like "+" or "#", so use look-arounds
-    return re.compile(r"(?<![a-z0-9.])" + re.escape(alias.lower()) + r"(?![a-z0-9+#])")
-
-_SKILL_PATTERNS = {skill: [_alias_pattern(a) for a in aliases] for skill, aliases in SKILL_ALIASES.items()}
-
-
-def find_known_skills(text):
-    """Return canonical skills from the vocabulary that appear in text, in order of first appearance."""
-    text = text.lower()
-    hits = []
-    for skill, patterns in _SKILL_PATTERNS.items():
-        positions = [m.start() for p in patterns for m in [p.search(text)] if m]
-        if positions:
-            hits.append((min(positions), skill))
-    return [s for _, s in sorted(hits)]
-
-
 def extract_skills_from_jd(jd_text):
     """Skills the JD asks for.
 
@@ -87,14 +69,16 @@ def batch_process(jd_file, resumes_folder):
             continue
         resume_path = os.path.join(resumes_folder, resume_file)
         resume_text = parse_resume(resume_path)
-        score, verdict, missing, feedback = compute_final_score(resume_text, jd_text, jd_skills)
+        score, verdict, missing, feedback, matched = compute_final_score(resume_text, jd_text, jd_skills)
         results.append({
             "JD": os.path.basename(jd_file),
             "Resume": resume_file,
             "Score": score,
-            "Missing": missing,
+            # joined strings read better in the table and the CSV than Python lists
+            "Matched": ", ".join(matched),
+            "Missing": ", ".join(missing),
             "Verdict": verdict,
-            "Feedback": feedback
+            "Feedback": " ".join(feedback)
         })
 
     df = pd.DataFrame(results)

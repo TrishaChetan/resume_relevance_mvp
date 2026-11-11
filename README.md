@@ -17,6 +17,8 @@ Missing Skills Detection: Identifies skills or experiences in the JD that are mi
 
 Skill Vocabulary: ~80 canonical skills with aliases (e.g. sklearn → scikit-learn, k8s → kubernetes) in skills_db.py, matched on word boundaries so R doesn't match React and C doesn't match C++. Extend it with your own domain skills.
 
+Alias-Aware Resume Matching: Resumes are matched through the same aliases, so a JD asking for scikit-learn credits a resume that says sklearn, and machine learning credits ML. Results show both Matched and Missing skills.
+
 Ranked Shortlist: Results are sorted by score with a Rank column, ready for shortlisting.
 
 AI/LLM-based Feedback: Provides tailored feedback to students, highlighting areas for improvement.
