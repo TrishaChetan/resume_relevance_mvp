@@ -19,6 +19,8 @@ Skill Vocabulary: ~80 canonical skills with aliases (e.g. sklearn → scikit-lea
 
 Alias-Aware Resume Matching: Resumes are matched through the same aliases, so a JD asking for scikit-learn credits a resume that says sklearn, and machine learning credits ML. Results show both Matched and Missing skills.
 
+Experience Check: Reads the years a JD asks for ("3+ years", "2-4 years") and estimates the candidate's experience from date ranges under the resume's Experience / Employment / Internship headings (overlapping jobs counted once; project and education dates ignored). Shown in an Experience column, with a feedback note when the resume falls short. Scores are not changed.
+
 Ranked Shortlist: Results are sorted by score with a Rank column, ready for shortlisting.
 
 AI/LLM-based Feedback: Provides tailored feedback to students, highlighting areas for improvement.

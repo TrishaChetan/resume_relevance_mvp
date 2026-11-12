@@ -2,3 +2,4 @@ __pycache__/
 temp_resumes/
 temp_jd.*
 resume_evaluation_results.csv
+.pytest_cache/
