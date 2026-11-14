@@ -4,6 +4,7 @@ import pdfplumber
 import docx2txt
 import pandas as pd
 from scorer import compute_final_score
+from contact import extract_contact
 from experience import experience_check
 from skills_db import find_known_skills
 
@@ -72,11 +73,17 @@ def batch_process(jd_file, resumes_folder):
         resume_text = parse_resume(resume_path)
         score, verdict, missing, feedback, matched = compute_final_score(resume_text, jd_text, jd_skills)
         experience, exp_note = experience_check(resume_text, jd_text)
+        contact = extract_contact(resume_text)
         if exp_note:
             feedback = list(feedback) + [exp_note]
         results.append({
             "JD": os.path.basename(jd_file),
             "Resume": resume_file,
+            "Name": contact["name"],
+            "Email": contact["email"],
+            "Phone": contact["phone"],
+            "LinkedIn": contact["linkedin"],
+            "GitHub": contact["github"],
             "Score": score,
             # joined strings read better in the table and the CSV than Python lists
             "Experience": experience,
