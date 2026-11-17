@@ -19,6 +19,8 @@ Skill Vocabulary: ~80 canonical skills with aliases (e.g. sklearn → scikit-lea
 
 Alias-Aware Resume Matching: Resumes are matched through the same aliases, so a JD asking for scikit-learn credits a resume that says sklearn, and machine learning credits ML. Results show both Matched and Missing skills.
 
+Must-Have vs Nice-to-Have Skills: jd_priority.py reads the JD's structure — "Requirements:" / "Must have:" sections and phrases like "is required" mark must-haves; "Nice to have" / "Preferred" sections and "... is a plus" mark nice-to-haves; everything else is a normal skill. Skill matching is weighted 2 : 1 : 0.5, a candidate missing any must-have can't get a High verdict, and a "Missing must-haves" column makes deal-breakers easy to spot. The dashboard shows how each JD skill was classified.
+
 Experience Check: Reads the years a JD asks for ("3+ years", "2-4 years") and estimates the candidate's experience from date ranges under the resume's Experience / Employment / Internship headings (overlapping jobs counted once; project and education dates ignored). Shown in an Experience column, with a feedback note when the resume falls short. Scores are not changed.
 
 Contact Details: Each result includes the candidate's name, email, phone, LinkedIn and GitHub pulled from the resume, so a shortlist can be acted on straight away. Project links and date ranges aren't mistaken for contact details.

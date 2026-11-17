@@ -2,6 +2,7 @@ import re
 from rapidfuzz import fuzz
 from sentence_transformers import SentenceTransformer, util
 
+from jd_priority import missing_by_priority, weighted_hard_score
 from skills_db import SKILL_ALIASES, find_known_skills
 
 # Load local sentence-transformers model
@@ -80,9 +81,20 @@ def semantic_score(resume_text, jd_text):
 # --------------------------
 # Feedback generation
 # --------------------------
-def generate_feedback(resume_text, missing_skills, jd_text, sim=None):
+def generate_feedback(resume_text, missing_skills, jd_text, sim=None, priorities=None):
     feedback_list = []
-    
+
+    must, nice = missing_by_priority(missing_skills, priorities)
+    if must:
+        feedback_list.append(f"Missing must-have skills: {', '.join(must)} — the JD lists these as required.")
+        missing_skills = [s for s in missing_skills if s not in must]
+        if nice:
+            feedback_list.append(f"Nice-to-have skills that would strengthen the application: {', '.join(nice)}.")
+            missing_skills = [s for s in missing_skills if s not in nice]
+    elif nice:
+        feedback_list.append(f"Nice-to-have skills that would strengthen the application: {', '.join(nice)}.")
+        missing_skills = [s for s in missing_skills if s not in nice]
+
     if missing_skills:
         feedback_list.append(
             f"You are missing key skills: {', '.join(missing_skills)}. "
@@ -110,8 +122,13 @@ def generate_feedback(resume_text, missing_skills, jd_text, sim=None):
 # --------------------------
 # Compute final score
 # --------------------------
-def compute_final_score(resume_text, jd_text, jd_skills, weights=(0.5, 0.5)):
+def compute_final_score(resume_text, jd_text, jd_skills, weights=(0.5, 0.5), priorities=None):
+    """priorities: optional {skill: "must"|"nice"|"core"} from jd_priority.classify_skills.
+    Must-haves weigh 2x, nice-to-haves 0.5x, and a candidate missing any must-have
+    can't get a "High" verdict."""
     hard, matched_skills = hard_match_score(resume_text, jd_skills)
+    if priorities:
+        hard = weighted_hard_score(matched_skills, jd_skills, priorities)
     semantic = semantic_score(resume_text, jd_text)
     score = weights[0]*hard + weights[1]*semantic
     final_score = round(score*100, 2)
@@ -129,9 +146,11 @@ def compute_final_score(resume_text, jd_text, jd_skills, weights=(0.5, 0.5)):
         verdict = "Medium"
     else:
         verdict = "Low"
-    
+    if verdict == "High" and missing_by_priority(missing_skills, priorities)[0]:
+        verdict = "Medium"
+
     # Feedback
     # Feedback (reuses the similarity computed above instead of re-encoding)
-    feedback = generate_feedback(resume_text, missing_skills, jd_text, sim=semantic)
+    feedback = generate_feedback(resume_text, missing_skills, jd_text, sim=semantic, priorities=priorities)
 
     return final_score, verdict, missing_skills, feedback, matched_skills

@@ -7,6 +7,7 @@ from scorer import compute_final_score
 from contact import extract_contact
 from experience import experience_check
 from skills_db import find_known_skills
+from jd_priority import classify_skills, missing_by_priority
 
 # --------------------------
 # Parse resume
@@ -63,6 +64,7 @@ def extract_skills_from_jd(jd_text):
 def batch_process(jd_file, resumes_folder):
     jd_text = parse_jd(jd_file)
     jd_skills = extract_skills_from_jd(jd_text)
+    priorities = classify_skills(jd_text, jd_skills)
 
     results = []
 
@@ -71,7 +73,8 @@ def batch_process(jd_file, resumes_folder):
             continue
         resume_path = os.path.join(resumes_folder, resume_file)
         resume_text = parse_resume(resume_path)
-        score, verdict, missing, feedback, matched = compute_final_score(resume_text, jd_text, jd_skills)
+        score, verdict, missing, feedback, matched = compute_final_score(resume_text, jd_text, jd_skills,
+                                                                       priorities=priorities)
         experience, exp_note = experience_check(resume_text, jd_text)
         contact = extract_contact(resume_text)
         if exp_note:
@@ -88,6 +91,7 @@ def batch_process(jd_file, resumes_folder):
             # joined strings read better in the table and the CSV than Python lists
             "Experience": experience,
             "Matched": ", ".join(matched),
+            "Missing must-haves": ", ".join(missing_by_priority(missing, priorities)[0]),
             "Missing": ", ".join(missing),
             "Verdict": verdict,
             "Feedback": " ".join(feedback)
@@ -99,4 +103,5 @@ def batch_process(jd_file, resumes_folder):
         df = df.sort_values("Score", ascending=False).reset_index(drop=True)
         df.insert(0, "Rank", range(1, len(df) + 1))
     df.to_csv("resume_evaluation_results.csv", index=False)
+    df.attrs["jd_priorities"] = priorities  # shown above the results table
     return df

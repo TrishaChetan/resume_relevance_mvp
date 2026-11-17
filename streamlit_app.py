@@ -32,6 +32,17 @@ if st.button("Evaluate Resumes"):
             df = batch_process(jd_path, resumes_folder)
 
         # Display results
+        pri = df.attrs.get("jd_priorities") or {}
+        must = [s for s, p in pri.items() if p == "must"]
+        nice = [s for s, p in pri.items() if p == "nice"]
+        if must or nice:
+            st.subheader("What the JD asks for")
+            c1, c2, c3 = st.columns(3)
+            c1.markdown("**Must have** (2× weight)\n\n" + (", ".join(must) or "—"))
+            c2.markdown("**Mentioned** (1×)\n\n" + (", ".join(s for s, p in pri.items() if p == "core") or "—"))
+            c3.markdown("**Nice to have** (0.5×)\n\n" + (", ".join(nice) or "—"))
+            st.caption("Candidates missing a must-have can't get a High verdict.")
+
         st.subheader("Evaluation Results")
         st.dataframe(df)
 
